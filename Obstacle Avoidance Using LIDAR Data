@@ -1,0 +1,12 @@
+def avoid_obstacles(points):
+    """Avoid obstacles using LIDAR data."""
+    safe_zone = 500  # Distance threshold in mm
+    for angle, distance in points:
+        if 0 <= angle <= 90 and distance < safe_zone:
+            print("Obstacle detected on the right. Turning left.")
+            # Add motor control logic here
+        elif 270 <= angle <= 360 and distance < safe_zone:
+            print("Obstacle detected on the left. Turning right.")
+            # Add motor control logic here
+
+# Integrate with LIDAR acquisition code
