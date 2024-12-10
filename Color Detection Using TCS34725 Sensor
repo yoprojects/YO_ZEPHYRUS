@@ -1,0 +1,32 @@
+import board
+import busio
+import adafruit_tcs34725
+
+# I2C setup
+i2c = busio.I2C(board.SCL, board.SDA)
+sensor = adafruit_tcs34725.TCS34725(i2c)
+
+# Set gain and integration time for accuracy
+sensor.gain = 4
+sensor.integration_time = 100
+
+def detect_color():
+    r, g, b = sensor.color_rgb_bytes
+    print(f"Detected RGB: ({r}, {g}, {b})")
+    if r > g and r > b:
+        return "Red"
+    elif g > r and g > b:
+        return "Green"
+    elif b > r and b > g:
+        return "Blue"
+    else:
+        return "Unknown"
+
+# Continuous detection
+try:
+    while True:
+        detected_color = detect_color()
+        print("Detected Color:", detected_color)
+        time.sleep(1)
+except KeyboardInterrupt:
+    print("Color detection stopped.")
