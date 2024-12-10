@@ -1,0 +1,25 @@
+import rplidar
+import numpy as np
+
+# Setup LIDAR
+LIDAR_PORT = '/dev/ttyUSB0'  # Replace with your LIDAR port
+lidar = rplidar.RPLidar(LIDAR_PORT)
+
+def process_lidar_data(scan):
+    """Processes LIDAR scan data into polar coordinates."""
+    points = []
+    for _, angle, distance in scan:
+        if distance > 0:  # Filter invalid readings
+            points.append((angle, distance))
+    return points
+
+try:
+    for scan in lidar.iter_scans():
+        points = process_lidar_data(scan)
+        print("LIDAR Points:", points)
+        # Add SLAM or path-planning logic here
+except KeyboardInterrupt:
+    print("Stopping LIDAR...")
+finally:
+    lidar.stop()
+    lidar.disconnect()
