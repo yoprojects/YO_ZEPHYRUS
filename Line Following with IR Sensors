@@ -1,0 +1,38 @@
+import RPi.GPIO as GPIO
+import time
+
+# GPIO setup for IR sensors and motors
+IR_SENSORS = [17, 27, 22, 23, 24]  # Pins for IR sensors
+MOTOR_LEFT = 20
+MOTOR_RIGHT = 21
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(IR_SENSORS, GPIO.IN)
+GPIO.setup([MOTOR_LEFT, MOTOR_RIGHT], GPIO.OUT)
+
+# Control logic
+def line_following():
+    left_motor = GPIO.PWM(MOTOR_LEFT, 100)  # PWM for speed control
+    right_motor = GPIO.PWM(MOTOR_RIGHT, 100)
+    left_motor.start(0)
+    right_motor.start(0)
+    
+    try:
+        while True:
+            sensors = [GPIO.input(pin) for pin in IR_SENSORS]
+            if sensors == [0, 1, 1, 1, 0]:  # Example: robot is on track
+                left_motor.ChangeDutyCycle(50)
+                right_motor.ChangeDutyCycle(50)
+            elif sensors[0] == 1:  # Turn left
+                left_motor.ChangeDutyCycle(30)
+                right_motor.ChangeDutyCycle(70)
+            elif sensors[-1] == 1:  # Turn right
+                left_motor.ChangeDutyCycle(70)
+                right_motor.ChangeDutyCycle(30)
+            else:  # Stop if no line detected
+                left_motor.ChangeDutyCycle(0)
+                right_motor.ChangeDutyCycle(0)
+    except KeyboardInterrupt:
+        GPIO.cleanup()
+
+line_following()
